@@ -16,8 +16,8 @@ authors:
   - family-names: "<SURNAME>"
     given-names: "<Given>"
     affiliation: "<Institution>"
-# TODO: add repository-code and doi once the release is deposited
-# repository-code: "https://github.com/<owner>/armd-transferability-audit"
+repository-code: "https://github.com/YUWUxagw/armd-transferability-audit"
+# TODO: add doi once the release is deposited on Zenodo
 # doi: "10.5281/zenodo.XXXXXXX"
 keywords:
   - antimicrobial resistance
