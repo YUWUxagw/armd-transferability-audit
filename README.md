@@ -71,11 +71,28 @@ The scripts reference two roots that existed on the analysis machine:
 - `F:\E\Machine Learning\ARMD\` — the project tree as it stood at submission
   (`05_源数据\` for results, `clean\clean\` for cleaned data, `02_图表\` for figures)
 
-Scripts from different pipeline generations point at different roots, and six
-scripts reference both. Before running, either recreate that layout, or
-substitute your own paths (the path literals are module-level constants such as
-`BASE`, `OUT`, `CLEAN`, `ROOT` near the top of each file, so substitution is
-mechanical).
+Scripts from different pipeline generations point at different roots.
+
+**A path audit of this release (2026-09-22) found that 31 of the 62 scripts
+build paths that do not exist in the project tree as it stands**, in two
+patterns:
+
+1. **`data/clean` (~20 scripts)** — the cleaning output was later moved to
+   `clean/clean/`, but the scripts still join `BASE + data + clean`. Affects
+   `step14`–`step16`, `step21`–`step23`, `step26`, `step28`–`step31`,
+   `step36`, `step38`, `step39`, `step48`, `step52`–`step55` and others.
+2. **Raw datasets joined onto the project root (10 scripts)** — `step9`,
+   `step11`, `step18`, `step27`, `step32`, `step46`, `step47`, `step49`,
+   `step50`, `step51` build `BASE/ARMD-MGB` etc., but the raw datasets live
+   under `E:\ARMD\`, not inside the project directory.
+
+The reporting and QA scripts that were kept in active use after the project
+moved (notably `step58_qa_audit.py`, which reads only `05_源数据/` and the
+manuscript directory) do resolve correctly.
+
+Before running, either recreate the expected layout or substitute your own
+paths. The roots are module-level constants (`BASE`, `ROOT`, `OUT`, `CLEAN`)
+near the top of each file, so substitution is mechanical.
 
 **We have deliberately not refactored this to a single config module.** The
 published paths are the ones that produced the reported numbers; a refactor we
