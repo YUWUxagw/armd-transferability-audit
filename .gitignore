@@ -1,0 +1,43 @@
+# ---- data: never commit (third-party, DUA-restricted) ----
+data/
+clean/
+*.csv
+!frozen_dataset_hashes.csv
+
+# ---- analysis outputs ----
+audit_out/
+outputs/
+results/
+figures/
+*.svg
+*.pdf
+*.tif
+*.tiff
+*.png
+
+# ---- manuscript / submission materials ----
+*.docx
+*.doc
+paper/
+manuscript/
+
+# ---- python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# ---- editors / os ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- local secrets ----
+.env
+*.pem
+credentials.json

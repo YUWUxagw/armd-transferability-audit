@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the paper and the three source datasets."
+title: "ARMD cross-system transferability audit — analysis code"
+abstract: >-
+  Analysis pipeline for a cross-system transferability audit of a Pseudomonas
+  aeruginosa antimicrobial-susceptibility prediction model trained at Mass
+  General Brigham and evaluated at Stanford Health Care and UT Southwestern
+  Medical Center, including shift-attribution diagnostics, evidence-drift
+  analysis, data-alignment sensitivity analyses and the figure scripts.
+type: software
+version: 1.0.0
+date-released: "2026-09-22"
+license: MIT
+# TODO: complete author list before release
+authors:
+  - family-names: "<SURNAME>"
+    given-names: "<Given>"
+    affiliation: "<Institution>"
+# TODO: add repository-code and doi once the release is deposited
+# repository-code: "https://github.com/<owner>/armd-transferability-audit"
+# doi: "10.5281/zenodo.XXXXXXX"
+keywords:
+  - antimicrobial resistance
+  - Pseudomonas aeruginosa
+  - external validation
+  - transportability
+  - distribution shift
+  - electronic health records
+  - clinical prediction model
+references:
+  - type: dataset
+    title: "Antibiotic Resistance Microbiology Dataset Mass General Brigham (ARMD-MGB)"
+    doi: "10.13026/2r5k-b955"
+    notes: "PhysioNet; credentialed access under Credentialed Health Data License 1.5.0"
+  - type: dataset
+    title: "Antibiotic Resistance Microbiology Dataset (ARMD)"
+    doi: "10.5061/dryad.jq2bvq8kp"
+    notes: "Dryad; CC0"
+  - type: dataset
+    title: "Antimicrobial Resistance Microbiological Dataset (ARMD-UTSW)"
+    doi: "10.5061/dryad.0rxwdbsd5"
+    notes: "Dryad; CC0"

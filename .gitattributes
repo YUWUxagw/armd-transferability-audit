@@ -1,0 +1,8 @@
+# Normalize line endings so the repo is identical on Windows/macOS/Linux
+* text=auto
+*.py   text eol=lf
+*.md   text eol=lf
+*.csv  text eol=lf
+*.cff  text eol=lf
+*.txt  text eol=lf
+LICENSE text eol=lf

@@ -1,0 +1,10 @@
+# ARMD cross-system transferability audit — verified runtime environment
+# Python 3.13.2 (Windows 11), verified 2026-08-10 on the frozen dataset v3.3
+lightgbm==4.7.0
+scikit-learn==1.9.0
+numpy==2.2.3
+pandas==2.3.3
+scipy==1.15.2
+matplotlib==3.10.1
+shap==0.52.0
+Pillow==11.1.0
