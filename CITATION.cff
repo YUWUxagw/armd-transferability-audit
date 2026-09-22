@@ -19,8 +19,8 @@ authors:
     given-names: "Yinong"
     affiliation: "Xi'an Children's Hospital"
 repository-code: "https://github.com/YUWUxagw/armd-transferability-audit"
-# TODO: add doi once the release is deposited on Zenodo
-# doi: "10.5281/zenodo.XXXXXXX"
+# Version DOI for v1.0.0. The concept DOI (all versions) is 10.5281/zenodo.22888421.
+doi: "10.5281/zenodo.22888422"
 keywords:
   - antimicrobial resistance
   - Pseudomonas aeruginosa

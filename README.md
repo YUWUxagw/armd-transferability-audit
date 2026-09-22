@@ -1,5 +1,7 @@
 # ARMD Cross-System Transferability Audit — Code Release
 
+[![DOI](https://zenodo.org/badge/1380814326.svg)](https://doi.org/10.5281/zenodo.22888421)
+
 Analysis code for a cross-system transferability audit of a *Pseudomonas aeruginosa*
 antimicrobial-susceptibility prediction model trained at one US health system
 (Mass General Brigham) and evaluated at two others (Stanford Health Care,
@@ -119,3 +121,8 @@ MIT — see `LICENSE`.
 
 See `CITATION.cff`. If you use this code, please cite the paper (citation to be
 completed on publication) and the three datasets listed above.
+
+This release is archived on Zenodo:
+
+- Version **v1.0.0**: `10.5281/zenodo.22888422`
+- All versions: `10.5281/zenodo.22888421`
