@@ -11,11 +11,12 @@ type: software
 version: 1.0.0
 date-released: "2026-09-22"
 license: MIT
-# TODO: complete author list before release
+# TODO: add co-author Huang Yinong (affiliation to confirm) — LICENSE names two
+# copyright holders, so this author list is currently incomplete
 authors:
-  - family-names: "<SURNAME>"
-    given-names: "<Given>"
-    affiliation: "<Institution>"
+  - family-names: "He"
+    given-names: "Wei"
+    affiliation: "Xi'an Children's Hospital"
 repository-code: "https://github.com/YUWUxagw/armd-transferability-audit"
 # TODO: add doi once the release is deposited on Zenodo
 # doi: "10.5281/zenodo.XXXXXXX"
