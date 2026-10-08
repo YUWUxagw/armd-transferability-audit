@@ -38,7 +38,20 @@ outputs: `step15_stable_features.py` (writes `phase2/stable_features.csv`),
 `step22_stable_subset_dca.py` (writes `dca.csv`, `stable_subset.csv`),
 `step39_tables.py` / `step40_table3_table4.py` (tables),
 `step57_regenerate_tables.py` (writes the `Table*_formatted.txt` files that
-`step58` opens) and `step59_joint_ablation.py` (writes `joint_ablation.csv`).
+`step58` opens), `step59_joint_ablation.py` (writes `joint_ablation.csv`) and
+`step60_model_family_external.py` (writes `model_family_external.csv` and
+`model_family_external_calibration.csv`).
+
+`step60_model_family_external.py` was added on 2026-10-08 to close a
+reproducibility gap: those two CSVs had been in the results tree since
+2026-09-21 and are cited in the manuscript, but no shipped script produced them.
+It trains logistic regression on the source cohort and evaluates on the target
+cohort (no cross-validation), takes the LightGBM column from the frozen
+`transfer_matrix.csv` rather than refitting, and verifies both output files
+against the published versions before writing; the external table reproduces
+byte-for-byte. It deliberately does not import `step16_phase3_transfer.py`, which
+pulls in `shap` at module level, so the one calibration function it needs is
+inlined instead.
 
 The script shipped without any README coverage is `spike1_mgb_mem_pipeline.py`.
 
@@ -83,11 +96,11 @@ machine's absolute paths. Two roots are referenced:
 Scripts from different pipeline generations point at different roots. Two
 patterns remain:
 
-**Pattern 1 — `data/clean` (30 scripts).** The cleaning output was later moved to
+**Pattern 1 — `data/clean` (24 scripts).** The cleaning output was later moved to
 `clean/clean/`, but these scripts still join `BASE + "data" + "clean"`. Affects
-`step9`, `step10`, `step12`–`step16`, `step19`, `step22`, `step23`,
-`step26`–`step31`, `step36`, `step38`, `step39`, `step47`–`step55`, `step59`
-and `figures_v5.py`.
+`step9`, `step10`, `step14`, `step15`, `step16`, `step22`, `step23`,
+`step26`–`step31`, `step36`, `step38`, `step39`, `step48`–`step51`,
+`step53`–`step55` and `step59`.
 
 **Pattern 2 — `E:\ARMD\` (17 scripts).** These reference the original analysis
 root in their path constants. Affects `spike1_mgb_mem_pipeline.py`, `step2`–`step8`,
@@ -96,8 +109,22 @@ root in their path constants. Affects `spike1_mgb_mem_pipeline.py`, `step2`–`s
 
 Scripts whose paths were updated on 2026-10-08 and now resolve correctly:
 `step11`, `step17`, `step18`, `step20`, `step21`, `step24`, `step25`,
-`step35`, `step37`, `step46`. `step57_regenerate_tables.py` and
+`step35`, `step37`, `step46`, `step47`, `step52` and
+`step60_model_family_external.py`. `step57_regenerate_tables.py` and
 `figures_v5_ledger.py` already resolved.
+
+`step47_independent_recalc.py` was also corrected on 2026-10-08: its five-fold
+cross-validation now uses the pipeline's patient-level `fold_id` rather than
+`StratifiedKFold` on row indices. The previous comment described the split as
+patient-level while the code split rows, which put roughly 19% of patients on
+both sides of a fold (900 of 4,744 in the meropenem cohort) and inflated the
+cross-validated scores, much more for the gradient-boosted arm (+0.013 to
++0.030) than for logistic regression (+0.005 to +0.011). With the split aligned
+to the main analysis, the script's logistic-regression arm reproduces the
+pipeline's `cv_internal.csv` to within 0.0004, so remaining differences are
+attributable to implementation rather than to splitting. Section (1) now skips
+with a message when the credential-gated MGB raw table is absent, so sections
+(2) and (3) run on any machine that has the frozen task files.
 
 `step58_qa_audit.py` does **not** resolve despite being the manuscript-level QA
 script: besides `05_源数据/` it also reads `04_代码/build_docx.py`,

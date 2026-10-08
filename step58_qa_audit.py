@@ -16,6 +16,9 @@ PAPER = os.path.join(BASE, "01_正文母稿")
 TAB = os.path.join(BASE, "03_表格")
 FIG = os.path.join(BASE, "02_图表")
 OUT = os.path.join(BASE, "06_审计与核对材料", "report_qa_20260917.txt")
+# 2026-10-08：代码可得性指针改用**概念 DOI** (all versions)。v1.0.0 的版本 DOI
+# 指向 step46 编码错位修复之前的代码。此前该串在本文件里硬编码了三处。
+_DOI = "10.5281/zenodo.22888421"
 
 def paper_file(fn):
     p1 = os.path.join(PAPER, fn)
@@ -280,10 +283,10 @@ chk("Abstract: partially localized", "partially localized to actionable" in ab_t
 chk("Methods: 3.7.1 numbering", "3.7.1 Feature evidence drift" in mr)
 chk("Methods: era sensitivity present", "restricting S/U to ≥2020" in mr)
 chk("Methods: single asterisk phrasing", "asterisk in the joint-intervention panel" in mr)
-chk("Abstract: CI-based nine-of-ten", "covered the prespecified internal reference in nine of ten drug–site directions" in ab_txt)
+chk("Abstract: CI-based nine-of-ten", "overlapped the prespecified internal reference in nine of ten primary drug–site directions" in ab_txt)
 chk("Abstract: data-alignment interventions", "data-alignment interventions" in ab_txt)
 chk("Abstract: actionable differences", "actionable differences" in ab_txt)
-chk("Abstract: shift-attribution diagnostics", "shift-attribution and SHAP-based evidence-drift diagnostics" in ab_txt)
+chk("Abstract: shift-attribution diagnostics", "label, covariate, era, subpopulation, and feature-attribution shift analyses" in ab_txt)
 chk("Methods: outcome-definition harmonization", "outcome-definition harmonization" in mr)
 chk("Supp: file present", len(supp) > 5000, f"chars={len(supp)}")
 chk("Supp: mucoid UTSW coding", "uniformly zero at UTSW" in supp)
@@ -292,9 +295,53 @@ chk("Supp: SHAP baseline acknowledgment", "in-sample attribution baseline effect
 chk("Methods: mucoid task-specificity", "CAZ matched its full sample" in mr)
 chk("Methods: CAZ exception in 4.11", "so unstable features alone do not account for the ceftazidime residual" in mr)
 chk("Methods: four-suspect ablation phrasing", "Removing any one of the four prespecified suspect features" in mr)
-chk("Declarations: honest ethics phrasing", "no additional human-subjects review was sought" in decl)
+chk("Declarations: honest ethics phrasing",
+    "no additional human-subjects review was sought" in decl.lower())  # 2026-09-22：BMC 重排后该句位于句首，改为大小写无关
 chk("Declarations: IRB numbers attributed", "Stanford eProtocol #70466" in decl)
 chk("Declarations: no longer inline in Methods 3.8", "Declarations Funding" not in mr)
+# 2026-09-22：BMC Declarations 重排为规定小标题结构（BMC 要求全部出现，不适用写 Not applicable）
+_BMC_HEADS = ["Ethics approval and consent to participate:", "Consent for publication:",
+              "Availability of data and materials:", "Competing interests:",
+              "Funding:", "Authors' contributions:", "Acknowledgements:"]
+_missing = [h for h in _BMC_HEADS if h not in decl]
+chk("BMC Declarations: 7 个规定小标题齐全", not _missing, f"缺={_missing}")
+chk("BMC Declarations: 含 'All authors read and approved the final manuscript'",
+    "All authors read and approved the final manuscript" in decl)
+chk("BMC Declarations: Authors' contributions 用首字母缩写",
+    "WH conceptualized" in decl and "YH curated" in decl)
+chk("BMC Declarations: 赫尔辛基声明 + Not applicable 兜底",
+    "Declaration of Helsinki" in decl and decl.count("Not applicable") >= 2)
+chk("BMC Declarations: 保留 Zenodo DOI 与 credentialed access 口径",
+    _DOI in decl and "credentialed access" in decl)
+chk("BMC Declarations: 未把原始数据说成公开可得",
+    "not redistributed" in decl and "openly available under CC0" in decl)
+# 2026-09-22：TRIPOD+AI 清单改 npj 口径（无编号体例；措辞与主稿同源）
+from docx import Document as _DocT   # 就地导入：`_Doc` 在本段之后（line 393）才定义，step58 分区顺序执行会崩
+_tr = _DocT(r"F:\E\Machine Learning\ARMD\TRIPOD_AI_checklist_20260920.docx")
+_trt = "\n".join([x.text for x in _tr.paragraphs] +
+                 [c.text for t in _tr.tables for r in t.rows for c in r.cells])
+chk("TRIPOD: 无 § / SMn / Table Sn / Figure Sn 编号（npj 口径）",
+    not re.search(r"§|\bSM\d|\bTables? S\d|\bFigures? S\d", _trt),
+    f"残留={re.findall(r'§|SM\\d|Tables? S\\d|Figures? S\\d', _trt)[:6]}")
+chk("TRIPOD: 无 'publicly available' / 'to be released' 旧措辞",
+    "publicly available" not in _trt and "to be released" not in _trt)
+chk("TRIPOD: 摘要条描述当前口径（ARIC 结构化四段）",
+    "structured (Background, Methods, Results, Conclusions)" in _trt
+    and "unstructured, 150 words" not in _trt)
+chk("TRIPOD: 代码可得性已回填 Zenodo DOI", _DOI in _trt)
+chk("TRIPOD: 数据可得性口径正确（credentialed access + CC0）",
+    "credentialed access" in _trt and "openly available under CC0" in _trt)
+chk("TRIPOD: 无 em dash（house style；en dash 范围不受影响）",
+    "—" not in _trt, f"残留={_trt.count(chr(0x2014))} 处")
+chk("TRIPOD: 表格与抬头同源（节名映射取自 build_docx）",
+    "the Data Sources and Ethics section" in _trt and "the Limitations section" in _trt)
+# 2026-09-22 通读修正：feature-evidence drift 是 Figure 3，不是 Figure 2
+chk("TRIPOD: 20c 指向 Figure 3（feature-evidence drift）",
+    "Figure 3 (feature-evidence drift)" in _trt
+    and "Figure 2 (feature-evidence drift)" not in _trt)
+chk("TRIPOD: 无转换残留（(Title) / S6b / (care-setting gradient)）",
+    "(Title)" not in _trt and "S6b" not in _trt
+    and "(care-setting gradient)" not in _trt)
 # 2026-09-22：数据可达性口径——ARMD-MGB 是 credentialed access，不能笼统写 "publicly available"
 _bmc_cov = re.sub(r"\s+", " ", open(os.path.join(PAPER, "Cover_Letter_BMC_Medicine_EN.txt"),
                                     encoding="utf-8-sig").read())
@@ -308,6 +355,42 @@ chk("BMC declarations: SM naming + no vague 'open repository'",
 chk("BMC cover letter: no blanket 'publicly available'",
     "ARMD-MGB under credentialed access" in _bmc_cov
     and "publicly available" not in _bmc_cov)
+# 2026-09-22：代码已在 Zenodo 归档（v1.0.0），将来时措辞必须改为现在时并写入 DOI
+
+_njp_decl = open(os.path.join(PAPER, "Declarations_npj_Digital_Medicine.txt"), encoding="utf-8-sig").read()
+_njp_cov = re.sub(r"\s+", " ", open(os.path.join(PAPER, "Cover_Letter_npj_Digital_Medicine_EN.txt"),
+                                    encoding="utf-8-sig").read())   # 就地读：_cov / disc 在本节之后才定义
+_disc_now = open(os.path.join(PAPER, "Discussion_EN_v1.txt"), encoding="utf-8-sig").read()
+chk("code availability: Zenodo DOI in both declarations",
+    _DOI in decl and _DOI in _njp_decl)
+chk("code availability: npj declarations no longer blanket 'publicly available'",
+    "ARMD-MGB is available from PhysioNet under credentialed access" in _njp_decl
+    and "de-identified and publicly available" not in _njp_decl)
+chk("code availability: no future-tense release promises left",
+    "will be released publicly" not in decl
+    and "will be released publicly" not in _njp_decl
+    and "will be released publicly" not in _njp_cov
+    and "will be released publicly" not in _bmc_cov)
+chk("code availability: Discussion §5.6 cites the DOI",
+    _DOI in _disc_now)
+# 2026-09-22：收尾扫描——数据可达性口径 + 文献[11] + BMC 投稿信措辞
+chk("data availability: no blanket 'publicly available' (Methods)",
+    "publicly available electronic health record" not in mr
+    and "datasets from public repositories" in mr)
+chk("data availability: npj declarations ethics phrasing",
+    "de-identified public datasets" not in _njp_decl)
+chk("npj cover letter: no blanket 'publicly available'",
+    "publicly available" not in _njp_cov
+    and "ARMD-MGB under credentialed access" in _njp_cov)
+_refs_npj = re.sub(r"\s+", " ", open(os.path.join(PAPER, "References_npj_Digital_Medicine.txt"),
+                                     encoding="utf-8-sig").read())
+chk("ref [11]: both authors named in each list",
+    "11. Wei, Z. & Kanjilal, S." in _refs_npj
+    and "Wei Z, Kanjilal S." in intro)
+chk("BMC cover letter: no 'speaks directly' / no 'In one direction'",
+    "speaks directly" not in _bmc_cov
+    and "In one direction, a substantial share" not in _bmc_cov
+    and "is relevant to that requirement" in _bmc_cov)
 chk("Methods: code availability moved out", "will be released publicly in an open repository" not in mr)
 chk("Methods: predate 2020", "predate 2020" in mr)
 chk("Methods: 3.6 roadmap 10+20", "the ten MGB-outbound directions" in mr)
@@ -315,7 +398,13 @@ chk("Introduction: 10+20 directions", "ten MGB-outbound" in intro)
 chk("Discussion: four candidates summarized", "four candidate data-level explanations" in open(os.path.join(PAPER, "Discussion_EN_v1.txt"), encoding="utf-8").read())
 chk("Discussion: CI-covered verdicts", "CI-covered" in open(os.path.join(PAPER, "Discussion_EN_v1.txt"), encoding="utf-8").read())
 chk("Discussion: era calibration numbers", "remained far from calibration (Table S3)" in open(os.path.join(PAPER, "Discussion_EN_v1.txt"), encoding="utf-8").read())
-chk("Legends: step32 audit_out", "step32 attrition accounting" in open(os.path.join(FIG, "figure_legends.txt"), encoding="utf-8").read())
+# 2026-09-22：图注的源数据指向改为期刊惯用句，内部路径全部撤除
+_leg = open(os.path.join(FIG, "figure_legends.txt"), encoding="utf-8").read()
+chk("Legends: Fig1 attrition numbers retained", "4,960,599" in _leg and "10,578" in _leg)
+chk("Legends: source data in journal-standard form",
+    _leg.count("Source data are provided with this paper") == 8
+    and "Source data:" not in _leg,
+    f"{_leg.count('Source data are provided with this paper')} 处")
 chk("S7 note: CI-level classification", "lay entirely" in open(os.path.join(TAB, "TableS7_matched_reference.txt"), encoding="utf-8").read())
 from docx import Document as _Doc
 _docx = _Doc(r"F:\E\Machine Learning\ARMD\Manuscript_rebuilt_20260916.docx")
@@ -329,14 +418,117 @@ for t_ in _Doc(r"F:\E\Machine Learning\ARMD\Manuscript_rebuilt_20260916.docx").t
         for cell in row.cells:
             dtext += "\n" + cell.text
 chk("docx: no 'satisfying EPV'", "satisfying EPV" not in dtext)
-chk("docx: Table 4 note present (Gap Change)", "Gap Change = (Full Gap)" in dtext)
+chk("docx: Table 4 note present (Gap change)", "Gap change = (full gap) − (subset gap)" in dtext)
 chk("docx: Table 4 note present (stable subset)", "Stable subset: top-10" in dtext)
+# 2026-09-22：表题表注 / 图题图注定稿体例（作者手改版回写源文件）
+_TABDIR_ = r"F:\E\Machine Learning\ARMD\03_表格"
+for _i in range(1, 6):
+    _tp = os.path.join(_TABDIR_, f"Table{_i}_formatted.txt")
+    _tt = open(_tp, encoding="utf-8").read()
+    chk(f"Table {_i}: Abbreviations 行", "Abbreviations:" in _tt)
+    chk(f"Table {_i}: 表注以 Note. 起", "\nNote. " in _tt)
+    chk(f"Table {_i}: Source data 惯用句（带句点）",
+        "Source data are provided with this paper." in _tt)
+    chk(f"Table {_i}: 无内部路径", "results/phase3" not in _tt and "data/clean" not in _tt)
+    chk(f"Table {_i}: 无旧式 '- ' 子弹", "\n- " not in _tt)
+_fl_ = open(r"F:\E\Machine Learning\ARMD\02_图表\figure_legends.txt", encoding="utf-8").read()
+chk("figure legends: 主图 Abbreviations 行 x4",
+    sum(1 for _x in _fl_.split("\n") if _x.startswith("Abbreviations:")) == 4)
+chk("figure legends: Source data 句 x8",
+    _fl_.count("Source data are provided with this paper.") == 8)
+chk("figure legends: 无内部路径", "results/phase3" not in _fl_)
+chk("docx: 无残留 <i> 标记", "<i>" not in dtext)
+# 2026-09-22：特征变量名不得出现在读者可见文本里（数据源字段名除外）
+_FEATURE_TOK = re.compile(r"\b[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+\b")
+# 2026-09-22：order_proc_id（裸）已确认**不是**真实列名——全库代码里只作打印标签用，
+# 真实列名恒为 order_proc_id_coded（SITE_CFG 每一条的末尾连接键）。故不再入白名单。
+_DATAFIELDS = {"anon_id", "pat_enc_csn_id_coded", "order_proc_id_coded",
+               "prior_micro", "microbial_resistance", "implied_susceptibility", "ward_icu",
+               "end_days", "start_days", "prior_pseudo_days", "urethral_catheter",
+               "surgical_procedure", "prior_abx", "calibration_curve", "fold_id"}
+_leak = sorted({t for t in _FEATURE_TOK.findall(dtext)} - _DATAFIELDS)
+chk("docx: 无管线特征名泄漏（数据源字段名除外）", not _leak, f"残留={_leak}")
+chk("docx: Table 3 Top SMD 已人话化",
+    "Central venous catheter 0.85" in dtext and "Mucoid phenotype 0.85" in dtext)
+chk("docx: Table 3 Top SMD 无原始变量名", "proc_cvc:" not in dtext and "ward_h:" not in dtext)
+_sup2 = _Doc(r"F:\E\Machine Learning\ARMD\Supplementary_Material_20260916.docx")
+_sup2t = "\n".join([x.text for x in _sup2.paragraphs] +
+                   [c.text for t in _sup2.tables for r in t.rows for c in r.cells])
+chk("supp: Table S8 对照表已插入", "Table S8. Feature display names." in _sup2t)
+chk("supp: Table S8 行数 = 33", len(_sup2.tables) == 8 and len(_sup2.tables[7].rows) == 34,
+    f"表数={len(_sup2.tables)} 行数={len(_sup2.tables[7].rows) if len(_sup2.tables) > 7 else 'NA'}")
+chk("supp: Table S6a 特征列已人话化",
+    "Prior LVX resistance" in _sup2t and "comorb_count" in _sup2t  # 后者只在 S8 变量名列
+    and "comorb_count | " not in _sup2t)
+chk("supp: SM6 特征名与正文一致", "mucoid phenotype, care setting, specimen source, ICU" in _sup2t)
+# 补充材料：正文段只允许数据源字段名；特征名只允许出现在 Table S8 的变量名列
+_sup_para_tok = set()
+for _p in _sup2.paragraphs:
+    _sup_para_tok |= set(_FEATURE_TOK.findall(_p.text))
+_sup_leak = sorted(_sup_para_tok - _DATAFIELDS)
+chk("supp: 正文段无管线特征名泄漏", not _sup_leak, f"残留={_sup_leak}")
+_sup_tbl_tok = set()
+for _t in _sup2.tables[:-1]:          # 末张是 S8 对照表，变量名列本就该有
+    for _r in _t.rows:
+        for _c in _r.cells:
+            _sup_tbl_tok |= set(_FEATURE_TOK.findall(_c.text))
+_sup_tbl_leak = sorted(_sup_tbl_tok - _DATAFIELDS)
+chk("supp: S8 以外的表无管线特征名", not _sup_tbl_leak, f"残留={_sup_tbl_leak}")
+# 2026-09-22：裸 order_proc_id 是全稿最后一处"看着像列名、其实不是"的写法
+_BARE_ID = re.compile(r"\border_proc_id\b(?!_coded)")
+_bare = [s for s in ["Table1", "supp"] if _BARE_ID.search(dtext if s == "Table1" else _sup2t)]
+chk("全稿: 无裸 order_proc_id（真实列名为 order_proc_id_coded）", not _bare, f"命中={_bare}")
+chk("Table 1 注: 用 order_proc_id_coded", "one row per order_proc_id_coded" in dtext)
+chk("supp F5: 用 order_proc_id_coded", "The index culture's own order_proc_id_coded is excluded." in _sup2t)
+# 映射表与图 3 的 LABS 必须同步（figure_display_names.py ↔ figures_v5.py）
+import importlib.util as _ilu
+_fd = os.path.join(r"F:\E\Machine Learning\ARMD\04_代码", "feature_display_names.py")
+_sp = _ilu.spec_from_file_location("_fdn", _fd)
+_fdn = _ilu.module_from_spec(_sp); _sp.loader.exec_module(_fdn)
+_fv5 = open(os.path.join(r"F:\E\Machine Learning\ARMD\04_代码", "figures_v5.py"),
+            encoding="utf-8").read()
+_drift = {k: v for k, v in _fdn.FIGURE_LABS.items() if f'"{k}":' in _fv5 or f"'{k}':" in _fv5}
+chk("映射表: 图 3 的 LABS 16 条全部对齐", len(_fdn.FIGURE_LABS) == 16 and len(_drift) == 16,
+    f"对齐={len(_drift)}/16")
+_fl2 = open(r"F:\E\Machine Learning\ARMD\02_图表\figure_legends.txt", encoding="utf-8").read()
+chk("Fig3 Abbreviations: 新增 AMK/BL/LVX/TOB/TZP 已定义",
+    all(x in _fl2 for x in ["AMK, amikacin", "BL, β-lactam", "LVX, levofloxacin",
+                            "TOB, tobramycin", "TZP, piperacillin–tazobactam"]))
 _sd = _Doc(r"F:\E\Machine Learning\ARMD\Supplementary_Material_20260916.docx")
 _stext = "\n".join(x.text for x in _sd.paragraphs)
 chk("supp: Table S7 present", "Table S7. Matched-reference joint gaps" in _stext)
 # 2026-09-17：两级方向术语。补充材料图注是烘焙副本，不随 figure_legends.txt 更新，故单独断言
 chk("supp: FigS4 two-level direction terms", "site-pair routes" in _stext)
 chk("supp: no '6 directions' collision", "6 directions" not in _stext)
+# 2026-09-22：附件体例统一——删目录、删幽灵 Part 4、表题句末句号、表注 Source data/Note 两层
+chk("supp: no Contents block", "Contents" not in _stext)
+chk("supp: no ghost 'Part 4. Statistical Definitions'",
+    "Part 4" not in _stext and "Statistical Definitions" not in _stext)
+_s_titles = [x.strip() for x in _stext.split("\n") if x.strip().startswith("Table S")]
+chk("supp: every table title ends with a period",
+    _s_titles and all(t.endswith(".") for t in _s_titles), f"{len(_s_titles)} 个表题")
+chk("supp: source data in journal-standard form (6 tables + 4 S-figure legends)",
+    _stext.count("Source data are provided with this paper") == 10
+    and "Source data:" not in _stext,
+    f"{_stext.count('Source data are provided with this paper')} 处")
+chk("supp: no internal source paths in table notes/legends",
+    "data/clean/" not in _stext and "audit_out/" not in _stext)
+# 2026-09-22：全稿撤除内部源数据路径（图注/附表/正文行文一并）
+_PATHS = ("results/phase3/", "results/phase2/", "data/clean/", "audit_out/")
+_blob = mr + _disc_now + ab_txt + intro + supp + _stext + _leg
+_bad = [k for k in _PATHS if k in _blob]
+chk("no internal data paths anywhere in the manuscript package", not _bad, f"残留={_bad}")
+chk("Discussion §5.4 source-data pointer in standard form",
+    "source data are provided with this paper" in _disc_now
+    and "model_family_external_calibration.csv" not in _disc_now)
+chk("supp: S2/S3/S5 now carry notes (undefined abbreviations defined)",
+    "Care setting: IP, inpatient" in _stext
+    and "ΔAUROC = AUROC (restricted) − AUROC (all years)" in _stext
+    and "drop-I, Intermediate rows excluded" in _stext)
+chk("supp: Table S6b note retained", "Note. Table S6b" in _stext)
+chk("supp: S7 title names its parent table", "supplementary to Table 5" in _stext)
+chk("supp: no bullet-list notes left",
+    not any(x.strip().startswith("- ") for x in _stext.split("\n")))
 chk("docx: no '6 directions' collision", "6 directions" not in dtext)
 chk("docx: no 'six transfer directions'", "six transfer directions" not in dtext)
 # 2026-09-18：ADI 大写口径需覆盖表格单元格（此前只查段落，漏掉列头）、IPW 表注、图脚本可复现性
@@ -378,7 +570,7 @@ chk("seed: above = {CIP→U, LVX→U}", sorted(tag(r) for r in above) == sorted(
 chk("seed: below = {CAZ→U}", sorted(tag(r) for r in below) == sorted(["CAZ→U"]), str([tag(r) for r in below]))
 chk("Methods: seven covering wording", "the seven covering directions" in mr)
 chk("Methods: lay entirely below wording", "lay entirely below the fixed internal reference" in mr)
-chk("Abstract: prespecified qualifier", "retained a persistent negative residual" in ab_txt and "stable across five bootstrap seeds" in ab_txt)
+chk("Abstract: prespecified qualifier", "survived the tested alignment interventions" in ab_txt and "compatible with, but did not establish, concept-level heterogeneity" in ab_txt)
 disc = open(os.path.join(PAPER, "Discussion_EN_v1.txt"), encoding="utf-8").read()
 chk("Discussion: helps localize plausible", "the study's most actionable output" in disc)
 chk("Discussion: largely resolved by the interventions", "which is actionable" in disc)
@@ -397,7 +589,7 @@ chk("Discussion: could not be fully explained", "could not be fully explained by
 chk("Discussion: source-domain analyses did not identify", "no source-domain analysis used here flagged it" in disc)
 chk("Discussion: among the first", "marks the empirical boundary" in disc)
 chk("Methods: 3.7.2 renamed", "Shift-attribution diagnostics:" in mr)
-chk("docx: Table 3 diagnostics title", "Label-shift, covariate-shift, and residual" in dtext)
+chk("docx: Table 3 diagnostics title", "Label-shift, covariate-shift and residual" in dtext)
 chk("docx: Table 5 sensitivity title", "Transfer-gap sensitivity to data-alignment interventions" in dtext)
 chk("Methods: diagnostics wording", "label-shift diagnostics (prevalence differences" in mr)
 
@@ -417,7 +609,7 @@ chk("② npj abstract: identifiable data-generating mismatches",
     "linked much of the degradation to identifiable data-generating mismatches" in _njp_ab
     and "rather than biology" not in _njp_ab)
 chk("§5.1: audit-framing paragraph retained",
-    "External validation alone stops at documenting that loss" in disc
+    "better treated as a transferability audit than as a simple pass-fail assessment of discrimination" in disc
     and "rather than as a single undifferentiated measure of generalization failure" in disc
     and "the first of those steps" not in disc)
 chk("③ Discussion: relevant to potential deployment",
@@ -444,12 +636,12 @@ chk("cover letter: SM naming + no dangling 'Why npj'",
     and "this journal's readership." not in _cov)
 chk("② BMC abstract: biology negation removed",
     "rather than to patient biology" not in ab_txt
-    and "how much of a prediction model's loss is attributable to data-generation processes" in ab_txt)
-# 2026-09-22：BMC 四段式摘要与 npj 新版同步（作者指示"BMC 版四段式摘要 同步修改"）
-chk("BMC abstract: synced to npj framing",
-    "rarely identify where the loss arises" in ab_txt
-    and "linked much of the degradation to identifiable data-generating mismatches" in ab_txt
-    and "Cross-system audits should examine label construction, breakpoint era and population coverage" in ab_txt)
+    and "rarely distinguishes model generalization failure from differences in microbiological data generation" in ab_txt)
+# 2026-10-08：ARIC 改稿后，本稿与 npj（150 词版）框架已刻意分家，不再做「与 npj 同步」检查，
+# 改为校验 ARIC 摘要自身的框架（原 "BMC abstract: synced to npj framing" 已废弃）
+chk("ARIC abstract: ARIC framing",
+    "Several data-generating mismatches were consistent with substantial components of the observed degradation" in ab_txt
+    and "Cross-system audits of antimicrobial susceptibility models should therefore examine label construction, breakpoint era, and population coverage" in ab_txt)
 chk("BMC abstract: old framing gone",
     "rarely decompose why" not in ab_txt
     and "Part of the Stanford loss traced to label generation" not in ab_txt
@@ -463,14 +655,23 @@ _bmc_w = sum(len(re.sub(r"\s+", " ", m.group(2)).split()) for m in re.finditer(
     r"^(Background|Methods|Results|Conclusions):\s*(.*?)(?=\n(?:Background|Methods|Results|Conclusions):|\Z)",
     ab_txt, re.S | re.M))
 chk("BMC abstract <= 350 words", _bmc_w <= 350, f"{_bmc_w} words")
-# ALL.txt 是 canonical 的逐字拼接（2026-09-22 全量重建），抽查各区段须同步
-chk("ALL.txt: §2 uses the new surrogate wording",
-    "did not provide a reliable surrogate" in _all2)
-chk("ALL.txt: §1 model-family is 'matched or outperformed'",
-    "matched or outperformed LightGBM on all ten" in _all2)
-chk("ALL.txt: abstract mirrors BMC canonical",
-    "covered the prespecified internal reference in nine of ten drug–site directions" in _all2
-    and "A transferability audit combining label, covariate, breakpoint era" in _all2)
+# 2026-10-08：ALL.txt 改为由 04_代码/build_all.py 从四个分文件重建。此前它手工维护，
+# 自 2026-09-22 起再未更新，已漂移出 29 句陈旧文本；而下面原本三条断言是拿**旧措辞**
+# 去查 ALL.txt 的，恰好因为 ALL.txt 一起过期而持续报 PASS（假绿）。现分两层：
+#   ① 内容断言一律查**源文件**（Discussion / abstract），不再查派生文件；
+#   ② 另加一条专用行，校验 ALL.txt 确实跟着重建过。
+chk("Discussion §2: surrogate wording",
+    "did not provide a reliable surrogate" in _disc2)
+chk("Discussion §1: model-family is 'matched or outperformed'",
+    "matched or outperformed LightGBM on all ten" in _disc2)
+chk("abstract: nine-of-ten verdict uses the CI framing",
+    "overlapped the prespecified internal reference in nine of ten" in ab_txt)
+chk("abstract: audit scope sentence",
+    "focusing on label construction, population coverage, breakpoint era" in ab_txt)
+# ALL.txt 同步性：标题行必须与摘要源文件一字不差 —— 改了标题而没重建 ALL.txt 即 FAIL
+_ab_title = [l for l in ab_txt.split("\n") if l.startswith("Title:")][0].strip()
+chk("ALL.txt rebuilt from sources (title matches abstract)",
+    _ab_title in _all2, _ab_title[:60])
 # 合法编号范围取自 build_docx 的节列表（txt 里 Results 用 1.–15.，4.N 是渲染时加的）
 _bd = open(os.path.join(BASE, "04_代码", "build_docx.py"), encoding="utf-8-sig").read()
 def _sec_count(name):

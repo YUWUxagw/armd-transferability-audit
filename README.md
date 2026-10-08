@@ -75,7 +75,7 @@ must end `RESULT: ALL PASS`.
 python step52_verify_chain.py
 ```
 
-### All 55 scripts in this release
+### All 56 scripts in this release
 
 ```text
 figures_v5                figures_v5_ledger         spike1_mgb_mem_pipeline
@@ -96,7 +96,7 @@ step46_I_sensitivity      step47_independent_recalc step48_patient_bootstrap_all
 step49_attribution_ledger step50_joint_fix_ci       step51_pairwise_fixes
 step52_verify_chain       step53_boot_seed_sensitivity step54_imputation_sensitivity
 step55_calibration_ci     step57_regenerate_tables  step58_qa_audit
-step59_joint_ablation
+step59_joint_ablation     step60_model_family_external
 ```
 
 `step1`, `step45` and `step56` do not exist. What each script does — and the

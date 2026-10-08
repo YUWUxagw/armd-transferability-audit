@@ -17,7 +17,9 @@ import numpy as np
 import pandas as pd
 
 BASE = r"F:\E\Machine Learning\ARMD"
-CLEAN = os.path.join(BASE, "data", "clean")
+# 2026-10-08：清洗数据已由 data/clean 迁至 clean/clean。本文件此前未随迁移更新，
+# 导致验收脚本自身跑不动（FileNotFoundError: data\clean\MGB\task_*.csv）。
+CLEAN = os.path.join(BASE, "clean", "clean")
 OUT = os.path.join(BASE, "05_源数据", "phase3")
 rep = open(os.path.join(OUT, "report_verify_chain.txt"), "w", encoding="utf-8")
 def p(*a):
