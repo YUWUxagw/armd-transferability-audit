@@ -8,8 +8,8 @@ abstract: >-
   Medical Center, including shift-attribution diagnostics, evidence-drift
   analysis, data-alignment sensitivity analyses and the figure scripts.
 type: software
-version: 1.0.0
-date-released: "2026-09-22"
+version: 1.1.0
+date-released: "2026-10-08"
 license: MIT
 authors:
   - family-names: "He"
@@ -19,8 +19,10 @@ authors:
     given-names: "Yinong"
     affiliation: "Xi'an Children's Hospital"
 repository-code: "https://github.com/YUWUxagw/armd-transferability-audit"
-# Version DOI for v1.0.0. The concept DOI (all versions) is 10.5281/zenodo.22888421.
-doi: "10.5281/zenodo.22888422"
+# Concept DOI (all versions). It always resolves to the newest release, so this
+# field does not go stale when a version is published. v1.0.0 is
+# 10.5281/zenodo.22888422.
+doi: "10.5281/zenodo.22888421"
 keywords:
   - antimicrobial resistance
   - Pseudomonas aeruginosa

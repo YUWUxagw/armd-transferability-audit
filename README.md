@@ -130,7 +130,6 @@ MIT — see `LICENSE`.
 See `CITATION.cff`. Please cite the paper (citation to be completed on
 publication) and the three datasets listed above.
 
-Archived on Zenodo:
-
-- Version **v1.0.0**: `10.5281/zenodo.22888422`
-- All versions: `10.5281/zenodo.22888421`
+Archived on Zenodo. The badge at the top of this file is served by Zenodo and
+tracks the latest release, and the concept DOI `10.5281/zenodo.22888421` always
+resolves to the newest version. `10.5281/zenodo.22888422` is v1.0.0.
