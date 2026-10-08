@@ -9,8 +9,8 @@ import os
 import pandas as pd
 
 BASE = r"F:\E\Machine Learning\ARMD"; M = os.path.join(BASE, "ARMD-MGB"); S = os.path.join(BASE, "ARMD-Stanford")
-CLEAN = os.path.join(BASE, "data", "clean")
-OUT = r"E:\ARMD\audit_out"
+CLEAN = os.path.join(BASE, "clean", "clean")
+OUT = r"F:\E\Machine Learning\ARMD\06_审计与核对材料\audit_out"
 os.makedirs(OUT, exist_ok=True)
 f = open(os.path.join(OUT, "report_step11_spotcheck.txt"), "w", encoding="utf-8")
 fails = []

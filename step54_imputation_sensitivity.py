@@ -40,7 +40,7 @@ INTERNAL = _load_internal()
 
 src = open(os.path.join(BASE, "04_代码", "step51_pairwise_fixes.py"), encoding="utf-8").read()
 tree = ast.parse(src)
-ns = {"os": os, "np": np, "pd": pd, "sys": sys}
+ns = {"os": os, "np": np, "pd": pd, "sys": sys, "INTERNAL": INTERNAL}
 CONST_NAMES = ("BASE","CLEAN","OUT","TASKS","COHORT","PHENO","POSCOL","NEGCOL","PRELIM")
 for node in tree.body:
     if isinstance(node, ast.FunctionDef) and node.name in ("build","encode"):

@@ -3,7 +3,7 @@
 import pandas as pd
 
 for site in ["MGB", "Stanford", "UTSW"]:
-    b = pd.read_csv(rf"E:\ARMD\data\clean\{site}\site_base_v3.csv", low_memory=False, encoding="utf-8-sig")
+    b = pd.read_csv(rf"F:\E\Machine Learning\ARMD\clean\clean\{site}\site_base_v3.csv", low_memory=False, encoding="utf-8-sig")
     print(f"{site}: 基座 {len(b)} 培养 | "
           f"proc_urinary_cath={int((b['proc_urinary_cath']==1).sum())} "
           f"proc_dialysis={int((b['proc_dialysis']==1).sum())} "

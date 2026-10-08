@@ -2,7 +2,7 @@
 """验证: 三站分类列首次出现顺序 vs 编码 (pandas cat.codes 顺序假设)"""
 import pandas as pd
 
-CLEAN = r"E:\ARMD\data\clean"
+CLEAN = r"F:\E\Machine Learning\ARMD\clean\clean"
 
 for task in ["meropenem", "ciprofloxacin"]:
     print(f"=== {task} ===")

@@ -40,12 +40,14 @@ def _load_internal():
     return _out
 
 
-INTERNAL = _load_internal()TASKS = ["meropenem","ciprofloxacin","levofloxacin","ceftazidime","cefepime"]
+INTERNAL = _load_internal()
+
+TASKS = ["meropenem","ciprofloxacin","levofloxacin","ceftazidime","cefepime"]
 
 src = open(os.path.join(BASE, "04_代码", "step51_pairwise_fixes.py"), encoding="utf-8").read()
 tree = ast.parse(src)
-ns = {"os": os, "np": np, "pd": pd, "sys": sys}
-CONST_NAMES = ("BASE","CLEAN","OUT","TASKS","COHORT","PHENO","POSCOL","NEGCOL","PRELIM","INTERNAL")
+ns = {"os": os, "np": np, "pd": pd, "sys": sys, "INTERNAL": INTERNAL}
+CONST_NAMES = ("BASE","CLEAN","OUT","TASKS","COHORT","PHENO","POSCOL","NEGCOL","PRELIM")
 for node in tree.body:
     if isinstance(node, ast.FunctionDef) and node.name in ("build","encode"):
         exec(compile(ast.Module(body=[node], type_ignores=[]), "<step51>", "exec"), ns)

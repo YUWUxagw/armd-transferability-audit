@@ -2,7 +2,7 @@
 """读 DCA 代表性数字 (Results 草稿用)"""
 import pandas as pd
 
-d = pd.read_csv(r"E:\ARMD\results\phase3\dca.csv")
+d = pd.read_csv(r"F:\E\Machine Learning\ARMD\05_源数据\phase3\dca.csv")
 d = d[d["model"] == "full"]
 out = []
 for t in ["meropenem", "ciprofloxacin", "levofloxacin", "ceftazidime", "cefepime"]:

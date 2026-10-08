@@ -8,3 +8,4 @@ scipy==1.15.2
 matplotlib==3.10.1
 shap==0.52.0
 Pillow==11.1.0
+python-docx==1.2.0

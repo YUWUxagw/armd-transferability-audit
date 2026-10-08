@@ -11,8 +11,8 @@ import numpy as np
 import pandas as pd
 
 BASE = r"F:\E\Machine Learning\ARMD"; M = os.path.join(BASE, "ARMD-MGB")
-CLEAN = os.path.join(BASE, "data", "clean", "MGB")
-OUT = r"E:\ARMD\audit_out"
+CLEAN = os.path.join(BASE, "clean", "clean", "MGB")
+OUT = r"F:\E\Machine Learning\ARMD\06_审计与核对材料\audit_out"
 os.makedirs(OUT, exist_ok=True)
 rep = open(os.path.join(OUT, "report_step18_verify.txt"), "w", encoding="utf-8")
 fails = []
@@ -166,7 +166,7 @@ maps = fit_cat_maps_local(mgb_raw)
 adi_med = mgb_raw["adi"].median()
 mgb = prep_cross_local(mgb_raw, maps, adi_med)
 feats = feats_of_local(mgb)
-sta = prep_cross_local(pd.read_csv(os.path.join(BASE, "data", "clean", "Stanford", "task_meropenem.csv"),
+sta = prep_cross_local(pd.read_csv(os.path.join(BASE, "clean", "clean", "Stanford", "task_meropenem.csv"),
                                    low_memory=False, encoding="utf-8-sig"), maps, adi_med)
 m = lgb.LGBMClassifier(n_estimators=500, learning_rate=0.05, num_leaves=31, min_child_samples=30,
                        subsample=0.8, colsample_bytree=0.8, random_state=42, verbose=-1)

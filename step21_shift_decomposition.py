@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 BASE = r"F:\E\Machine Learning\ARMD"
-CLEAN = os.path.join(BASE, "data", "clean")
+CLEAN = os.path.join(BASE, "clean", "clean")
 OUT = os.path.join(BASE, "05_源数据", "phase3")
 os.makedirs(OUT, exist_ok=True)
 rep = open(os.path.join(OUT, "report_shift_decomposition.txt"), "w", encoding="utf-8")

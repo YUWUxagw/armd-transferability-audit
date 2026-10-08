@@ -2,7 +2,7 @@
 """抽查关键特征漂移比值"""
 import pandas as pd
 
-d = pd.read_csv(r"E:\ARMD\results\phase3\feature_drift.csv")
+d = pd.read_csv(r"F:\E\Machine Learning\ARMD\05_源数据\phase3\feature_drift.csv")
 for tgt in ["Stanford", "UTSW"]:
     sub = d[d["tgt"] == tgt]
     print(f"=== MGB→{tgt} 关键特征漂移 (跨任务) ===")

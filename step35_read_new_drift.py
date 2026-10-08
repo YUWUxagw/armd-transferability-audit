@@ -2,7 +2,7 @@
 """读 adi 剔除后新漂移表关键数字"""
 import pandas as pd
 
-d = pd.read_csv(r"E:\ARMD\results\phase3\feature_drift.csv")
+d = pd.read_csv(r"F:\E\Machine Learning\ARMD\05_源数据\phase3\feature_drift.csv")
 for tgt in ["Stanford", "UTSW"]:
     sub = d[d["tgt"] == tgt]
     st = sub[sub["in_stable_set"] == 1]

@@ -46,7 +46,9 @@ def _load_internal():
     return _out
 
 
-INTERNAL = _load_internal()def build(site, task, drop_I=True, drop_mucoid=True, min_year=2020):
+INTERNAL = _load_internal()
+
+def build(site, task, drop_I=True, drop_mucoid=True, min_year=2020):
     cols = ["anon_id","order_proc_id_coded","organism","antibiotic",PHENO[site]]
     if POSCOL[site]: cols.append(POSCOL[site])
     if NEGCOL[site]: cols.append(NEGCOL[site])
